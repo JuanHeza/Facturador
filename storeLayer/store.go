@@ -11,6 +11,19 @@ type Store interface {
     GetAllPosts(ctx context.Context) ([]Post, error)
 }
 
+type MongoDB interface{
+    ReadMDB(ctx context.Context, name, handle string) error
+    CreateMDB(ctx context.Context, name, handle string) error
+    UpdateMDB(ctx context.Context, name, handle string) error
+    DeleteMDB(ctx context.Context, name, handle string) error
+}
+type SQL interface{
+    ReadSQL(ctx context.Context, name, handle string) error
+    CreateSQL(ctx context.Context, name, handle string) error
+    UpdateSQL(ctx context.Context, name, handle string) error
+    DeleteSQL(ctx context.Context, name, handle string) error
+}
+
 type store struct {
     db *gorm.DB
 }

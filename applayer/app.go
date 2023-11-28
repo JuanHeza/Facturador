@@ -1,16 +1,17 @@
 package applayer
 
 import (
-    ...
+
+    "github.com/gin-gonic/gin"
 )
 
 type App interface {
-    GetAllUsers(ctx context.Context) ([]storelayer.User, error)
-    CreateUser(ctx context.Context, name, handle string) error
-    CreatePost(ctx context.Context, content, owner string) error
-    GetAllPosts(ctx context.Context) ([]Post, error)
+    Create(ctx *gin.Context)
+    Read(ctx *gin.Context)
+    Update(ctx *gin.Context)
+    Delete(ctx *gin.Context)
 }
-
+/*
 type app struct {
     store storelayer.Store
 }
@@ -20,3 +21,4 @@ func New(store storelayer.Store) *app {
         store: store,
     }
 }
+*/

@@ -7,10 +7,10 @@ import (
 )
 
 type Control struct {
-	Estatus   helperlayer.Estatus
-	Eliminado helperlayer.Estatus
-	Creacion  ControlData
-	Edicion   ControlData
+	Estatus   helperlayer.Estatus `json:"-"`
+	Eliminado helperlayer.Estatus `json:"-"`
+	Creacion  ControlData `json:"-"`
+	Edicion   ControlData `json:"-"`
 }
 
 type ControlData struct {
