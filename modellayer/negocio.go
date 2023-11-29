@@ -1,5 +1,5 @@
 package modellayer
-
+// https://blog.reedsy.com/fantasy-map-generators/
 import (
 	"encoding/json"
 	"fmt"
