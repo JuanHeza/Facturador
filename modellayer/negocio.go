@@ -1,4 +1,5 @@
 package modellayer
+
 // https://blog.reedsy.com/fantasy-map-generators/
 import (
 	"encoding/json"
@@ -9,53 +10,53 @@ import (
 )
 
 type Negocio struct {
-	NegocioID         int  `json:",omitempty"`
-	BearerToken       string `json:"-"`
-	Clave             string `json:",omitempty"`
-	ColorPrincipal    string `json:",omitempty"`
-	ColorSecundario   string `json:",omitempty"`
-	PeriodoVigencia   helperlayer.Vigencia `json:",omitempty"`
-	DiasVigencia      int `json:",omitempty"`
-    DatosGenerales
-	DatosFiscales
+	NegocioID       int                  `json:",omitempty" bson:"negocio_id,omitempty"`
+	BearerToken     string               `json:"-" bson:"bearer_token,omitempty"`
+	Clave           string               `json:",omitempty"  bson:"clave,omitempty"`
+	ColorPrincipal  string               `json:",omitempty"  bson:"color_primario,omitempty"`
+	ColorSecundario string               `json:",omitempty"  bson:"color_secundario,omitempty"`
+	PeriodoVigencia helperlayer.Vigencia `json:",omitempty"  bson:"periodo_vigencia,omitempty"`
+	DiasVigencia    int                  `json:",omitempty"  bson:"dias_vigencia,omitempty"`
+	DatosGenerales  `bson:",omitempty"`
+	DatosFiscales   `bson:",omitempty"`
 	Control
 }
 
 type Link struct {
-	Nombre string `json:",omitempty"`
-    Url string `json:",omitempty"`
+	Nombre string `json:",omitempty"  bson:"nombre,omitempty"`
+	Url    string `json:",omitempty"  bson:"url,omitempty"`
 }
 
 type Post struct {
-	Imagen string `json:",omitempty"`
+	Imagen string `json:",omitempty"  bson:"imagen,omitempty"`
 	Link
 }
 
 type DatosFiscales struct {
-	RazonSocial   string `json:",omitempty"`
-	Rfc           string `json:",omitempty"`
-	RegimenFiscal string `json:",omitempty"`
-	CodigoPostal  int `json:",omitempty"`
+	RazonSocial   string `json:",omitempty"  bson:"razon_social,omitempty"`
+	Rfc           string `json:",omitempty"  bson:"rfc,omitempty"`
+	RegimenFiscal string `json:",omitempty"  bson:"regimen_fiscal,omitempty"`
+	CodigoPostal  int    `json:",omitempty"  bson:"codigo_postal,omitempty"`
 }
 
-func (df *DatosFiscales) SetNull(){
-    df = &DatosFiscales{}
+func (df *DatosFiscales) SetNull() {
+	df = &DatosFiscales{}
 }
 
-type DatosGenerales struct{
-	Titulo            string `json:",omitempty"`
-	Logo              string `json:",omitempty"`
-	ImagenCabecera    string `json:",omitempty"`
-	Menu              []Link `json:",omitempty"`
-	DescripcionTitulo string `json:",omitempty"`
-	DescripcionTexto  string `json:",omitempty"`
-	Pie               []Post `json:",omitempty"`
-	Direccion         string `json:",omitempty"`
-	Telefono          []string `json:",omitempty"`    
+type DatosGenerales struct {
+	Titulo            string   `json:",omitempty"  bson:"titulo,omitempty"`
+	Logo              string   `json:",omitempty"  bson:"logo,omitempty"`
+	ImagenCabecera    string   `json:",omitempty"  bson:"imagen_cabecera,omitempty"`
+	Menu              []Link   `json:",omitempty"  bson:"menu,omitempty"`
+	DescripcionTitulo string   `json:",omitempty"  bson:"descripcion_titulo,omitempty"`
+	DescripcionTexto  string   `json:",omitempty"  bson:"descripcion_texto,omitempty"`
+	Pie               []Post   `json:",omitempty"  bson:"pie,omitempty"`
+	Direccion         string   `json:",omitempty"  bson:"direccion,omitempty"`
+	Telefono          []string `json:",omitempty"  bson:"telefono,omitempty"`
 }
 
-func (dg *DatosGenerales) SetNull(){
-    dg = &DatosGenerales{}
+func (dg *DatosGenerales) SetNull() {
+	dg = &DatosGenerales{}
 }
 
 func (ng *Negocio) GenerateBearer(tm time.Time, period int) {
@@ -76,12 +77,12 @@ func (ng *Negocio) GenerateBearer(tm time.Time, period int) {
 	ng.BearerToken = helperlayer.Encrypt(plaintext)
 }
 
-func (ng *Negocio) ToJson() (output string){
-    bits, err := json.Marshal(ng)
-    if err != nil {
-        fmt.Printf("Error: %s", err)
-        return;
-    }
-    output = string(bits)
-    return
+func (ng *Negocio) ToJson() (output string) {
+	bits, err := json.Marshal(ng)
+	if err != nil {
+		fmt.Printf("Error: %s", err)
+		return
+	}
+	output = string(bits)
+	return
 }

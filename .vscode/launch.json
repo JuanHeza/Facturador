@@ -12,7 +12,8 @@
             "program": "${workspaceFolder}",
             "env": {
                 "MONGODB_URI":"mongodb+srv://JuanHeza:1hCYw6lH9fF26Prs@evilpanda.cgorqpw.mongodb.net/?retryWrites=true&w=majority",
-                "MONGO_COLLECTION":"testing",
+                "MONGODB_DATABASE":"BillingBull",
+                "MONGO_COLLECTION":"BillingBull",
                 "MONGO_PASSWORD":"PASSWORD",
                 "MONGO_USER":"USER",
                 "SESSION_KEY":"EvilPanda-Morshu",
@@ -31,7 +32,8 @@
             "program": "${workspaceFolder}/${relativeFileDirname}",
             "env": {
                 "MONGODB_URI":"mongodb+srv://JuanHeza:1hCYw6lH9fF26Prs@evilpanda.cgorqpw.mongodb.net/?retryWrites=true&w=majority",
-                "MONGO_COLLECTION":"testing",
+                "MONGODB_DATABASE":"BillingBull",
+                "MONGO_COLLECTION":"BillingBull",
                 "MONGO_PASSWORD":"PASSWORD",
                 "MONGO_USER":"USER",
                 "SESSION_KEY":"EvilPanda-Morshu",

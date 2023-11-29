@@ -1,42 +1,84 @@
 package storelayer
 
 import (
-    ...
+	"context"
+	"fmt"
+	"log"
+	"os"
+
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type Store interface {
-    CreateUser(ctx context.Context, name, handle string) error
-    GetAllUsers(ctx context.Context) ([]User, error)
-    CreatePost(ctx context.Context, content, owner string) error
-    GetAllPosts(ctx context.Context) ([]Post, error)
+type Mongo interface {
+	Create() error
+	Read() error
+	Update() error
+	Delete() error
+	GetSingle() interface{}
 }
 
-type MongoDB interface{
-    ReadMDB(ctx context.Context, name, handle string) error
-    CreateMDB(ctx context.Context, name, handle string) error
-    UpdateMDB(ctx context.Context, name, handle string) error
-    DeleteMDB(ctx context.Context, name, handle string) error
-}
-type SQL interface{
-    ReadSQL(ctx context.Context, name, handle string) error
-    CreateSQL(ctx context.Context, name, handle string) error
-    UpdateSQL(ctx context.Context, name, handle string) error
-    DeleteSQL(ctx context.Context, name, handle string) error
+// https://www.mongodb.com/docs/drivers/go/current/usage-examples/find/
+
+func Create(collection string, app Mongo) (result *mongo.InsertOneResult, err error) {
+	uri := os.Getenv("MONGODB_URI")
+	db := os.Getenv("MONGODB_DATABASE")
+	if uri == "" {
+		log.Fatal("You must set your 'MONGODB_URI' environment variable.")
+	}
+
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+	if err != nil {
+		//panic(err)
+		return
+	}
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			//panic(err)
+			return
+		}
+	}()
+
+	coll := client.Database(db).Collection(collection)
+
+	result, err = coll.InsertOne(context.TODO(), app.GetSingle())
+	if err != nil {
+		return
+	}
+	return
 }
 
-type store struct {
-    db *gorm.DB
-}
+func Read(collection string, app Mongo) (err error) {
+	uri := os.Getenv("MONGODB_URI")
+	db := os.Getenv("MONGODB_DATABASE")
+	if uri == "" {
+		log.Fatal("You must set your 'MONGODB_URI' environment variable.")
+	}
 
-func New() *store {
-    db, err := gorm.Open(sqlite.Open("itty-bitty-social.db"), &gorm.Config{})
-    if err != nil {
-        panic("failed to connect database")
-    }
-
-    db.AutoMigrate(&User{})
-    db.AutoMigrate(&Post{})
-    return &store{
-        db: db,
-    }
+	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+	if err != nil {
+		//panic(err)
+		return
+	}
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			//panic(err)
+			return
+		}
+	}()
+	filter, err := bson.Marshal(app.GetSingle())
+	if err != nil {
+		return
+	}
+	coll := client.Database(db).Collection(collection)
+	err = coll.FindOne(context.TODO(), filter).Decode(app.GetSingle())
+	if err == mongo.ErrNoDocuments {
+		fmt.Println("No document was found")
+		return
+	}
+	if err != nil {
+		return
+	}
+	return
 }
