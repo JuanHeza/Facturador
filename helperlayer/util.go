@@ -58,3 +58,11 @@ func Decrypt(cryptoText string) string {
 
 	return fmt.Sprintf("%s", ciphertext)
 }
+
+func GeneratePassword() string{
+    b := make([]byte, PasswordSize)
+    if _, err := rand.Read(b); err != nil {
+        panic(err)
+    }
+    return fmt.Sprintf("%X", b)
+}

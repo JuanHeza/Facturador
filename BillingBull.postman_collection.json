@@ -1,0 +1,62 @@
+{
+	"info": {
+		"_postman_id": "6dd44404-252c-452f-b948-e4bdca56cacc",
+		"name": "BillingBull",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Root",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Negocio Crear",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "EZFTGfcxi978-Q3Fo5Od-RJ-j2UFV109q0g3plT3wrjCcfaEpFR0-ajLxpHoLruZXbfuxPrKFBJWJ8iqFAXIhpg4rpeDx_R9KZgaKfx22XTqYKNTqP5T6l4=",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "SERVER",
+			"value": "https://billingbull.juanheza.repl.co/",
+			"type": "default"
+		}
+	]
+}

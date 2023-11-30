@@ -20,9 +20,16 @@ type Negocio struct {
 	PeriodoVigencia helperlayer.Vigencia `json:",omitempty"  bson:"periodo_vigencia,omitempty"`
 	DiasVigencia    int                  `json:",omitempty"  bson:"dias_vigencia,omitempty"`
     Folios          int                  `json:",omitempty"  bson:"folios,omitempty"`
+    Vigencia                             `bson:",omitempty"`
 	DatosGenerales                       `bson:",omitempty"`
 	DatosFiscales                        `bson:",omitempty"`
 	Control
+}
+
+type Vigencia struct {
+    Periodo int `json:",omitempty" bson:",omitempty"`
+    Inicio time.Time `json:",omitempty" bson:"inicio,omitempty"`
+    Final  time.Time `json:",omitempty" bson:"final,omitempty"`
 }
 
 type Link struct {
@@ -66,11 +73,12 @@ func (ng *Negocio) GenerateBearer(tm time.Time, period int) {
 		tm = time.Now()
 	}
 	fmt.Println(tm)
+    
 	bearerData := &Token{
 		NegocioId: ng.NegocioID.Hex(),
 		Clave:     ng.Clave,
-		Inicio:    tm.Unix(),
-		Fin:       tm.AddDate(0, period, 0).Unix(),
+		Inicio:    ng.Inicio.Unix(),
+		Fin:       ng.Final.Unix(),
 	}
 	plaintext, err := json.Marshal(bearerData)
 	if err != nil {

@@ -20,6 +20,20 @@ func initNegocioRoutes(rt *gin.Engine) *gin.Engine {
 		context.String(http.StatusOK, fmt.Sprintf("Hello %s!!", name))
 	})
 
+    /*
+    PARAMS
+        Negocio
+            Clave
+            PeriodoVigencia
+            DiasVigencia
+            Folios
+            RazonSocial
+            Rfc
+            RegimenFiscal
+            CodigoPostal
+        User 
+            Correo
+    */
 	rt.POST("/negocio", func(context *gin.Context) {
 		negocioApp := &applayer.NegocioApp{}
 		negocioApp.Create(context)

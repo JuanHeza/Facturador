@@ -1,9 +1,13 @@
 package helperlayer
 
+import "fmt"
+
 type Estatus int
 type Vigencia int
 type Perfil int
 type Response string
+type Collections string
+
 const (
 	Activo Estatus = iota + 1
 	Inactivo
@@ -21,4 +25,13 @@ const (
     Success Response = "SUCCESS"
     Error Response = "ERROR"
 
+    PasswordSize = 8
+
+    User Collections = "user"
+    Negocio Collections = "negocio"
+    Receptor Collections = "receptor"
 )
+
+func (cl Collections) ToString() string{
+    return fmt.Sprint(cl)
+}

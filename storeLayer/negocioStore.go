@@ -3,7 +3,9 @@ package storelayer
 import (
 	"log"
 
+	"github.com/juanheza/facturador/helperlayer"
 	"github.com/juanheza/facturador/modellayer"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type NegocioStore struct {
@@ -11,30 +13,29 @@ type NegocioStore struct {
 	List   []*modellayer.Negocio `json:"-"`
 }
 
-var (
-	collection string = "negocio"
-)
-
-func (ns *NegocioStore) Create() (err error) {
+func (ns *NegocioStore) Create() (res *mongo.InsertOneResult, err error) {
     ns.Single.Control.Init(1)
-	one, many, err := Create(collection, ns)
-    log.Println(one)
-    log.Println(many)
-	return
+    res, err = Create(ns)
+    return
+}
+func (ns *NegocioStore) CreateMany() (res *mongo.InsertManyResult, err error) {
+    ns.Single.Control.Init(1)
+    res, err = CreateMany(ns)
+    return
 }
 
 func (ns *NegocioStore) Read() (err error) {
-	err = Read(collection, ns)
+	err = Read(ns)
 	log.Println(ns)
 	return
 }
 func (ns *NegocioStore) Update() (err error) {
-	result, err := Update(collection, ns)
+	result, err := Update(ns)
 	log.Println(result)
 	return
 }
 func (ns *NegocioStore) Delete() (err error) {
-	result, err := Delete(collection, ns)
+	result, err := Delete(ns)
 	log.Println(result)
 	return
 }
@@ -51,4 +52,8 @@ func (ns *NegocioStore) GetListAsArray() (list []interface{}) {
         list = append(list, element)
     }
     return
+}
+
+func (ns *NegocioStore) getCollection() string{
+    return helperlayer.Negocio.ToString()
 }
