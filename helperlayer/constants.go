@@ -9,6 +9,9 @@ const (
 	Inactivo
 	Eliminado
 	NoEliminado
+    Facturado
+    NoFacturado
+    Pendiente
 
 	Dias Vigencia = iota + 1
 	Mes

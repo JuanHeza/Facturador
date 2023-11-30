@@ -7,18 +7,21 @@ import (
 	"time"
 
 	"github.com/juanheza/facturador/helperlayer"
+    "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Negocio struct {
-	NegocioID       int                  `json:",omitempty" bson:"negocio_id,omitempty"`
+	NegocioID       primitive.ObjectID   `json:",omitempty" bson:"_id,omitempty"`
 	BearerToken     string               `json:"-" bson:"bearer_token,omitempty"`
 	Clave           string               `json:",omitempty"  bson:"clave,omitempty"`
+    Logo            string               `json:",omitempty"  bson:"logo,omitempty"`
 	ColorPrincipal  string               `json:",omitempty"  bson:"color_primario,omitempty"`
 	ColorSecundario string               `json:",omitempty"  bson:"color_secundario,omitempty"`
 	PeriodoVigencia helperlayer.Vigencia `json:",omitempty"  bson:"periodo_vigencia,omitempty"`
 	DiasVigencia    int                  `json:",omitempty"  bson:"dias_vigencia,omitempty"`
-	DatosGenerales  `bson:",omitempty"`
-	DatosFiscales   `bson:",omitempty"`
+    Folios          int                  `json:",omitempty"  bson:"folios,omitempty"`
+	DatosGenerales                       `bson:",omitempty"`
+	DatosFiscales                        `bson:",omitempty"`
 	Control
 }
 
@@ -45,7 +48,6 @@ func (df *DatosFiscales) SetNull() {
 
 type DatosGenerales struct {
 	Titulo            string   `json:",omitempty"  bson:"titulo,omitempty"`
-	Logo              string   `json:",omitempty"  bson:"logo,omitempty"`
 	ImagenCabecera    string   `json:",omitempty"  bson:"imagen_cabecera,omitempty"`
 	Menu              []Link   `json:",omitempty"  bson:"menu,omitempty"`
 	DescripcionTitulo string   `json:",omitempty"  bson:"descripcion_titulo,omitempty"`
@@ -65,7 +67,7 @@ func (ng *Negocio) GenerateBearer(tm time.Time, period int) {
 	}
 	fmt.Println(tm)
 	bearerData := &Token{
-		NegocioId: ng.NegocioID,
+		NegocioId: ng.NegocioID.Hex(),
 		Clave:     ng.Clave,
 		Inicio:    tm.Unix(),
 		Fin:       tm.AddDate(0, period, 0).Unix(),

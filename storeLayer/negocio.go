@@ -16,8 +16,10 @@ var (
 )
 
 func (ns *NegocioStore) Create() (err error) {
-	result, err := Create(collection, ns)
-	log.Println(result)
+    ns.Single.Control.Init(1)
+	one, many, err := Create(collection, ns)
+    log.Println(one)
+    log.Println(many)
 	return
 }
 
@@ -27,12 +29,26 @@ func (ns *NegocioStore) Read() (err error) {
 	return
 }
 func (ns *NegocioStore) Update() (err error) {
+	result, err := Update(collection, ns)
+	log.Println(result)
 	return
 }
 func (ns *NegocioStore) Delete() (err error) {
+	result, err := Delete(collection, ns)
+	log.Println(result)
 	return
 }
 func (ns *NegocioStore) GetSingle() (single interface{}) {
 	single = ns.Single
 	return
+}
+func (ns *NegocioStore) GetList() (list interface{}) {
+    list = ns.List
+    return
+}
+func (ns *NegocioStore) GetListAsArray() (list []interface{}) {
+    for _, element := range ns.List {
+        list = append(list, element)
+    }
+    return
 }

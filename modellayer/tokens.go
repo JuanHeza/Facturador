@@ -6,7 +6,7 @@ import (
 )
 
 type Token struct {
-	NegocioId int
+	NegocioId string
 	Clave     string
 	Inicio    int64
 	Fin       int64
