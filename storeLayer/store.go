@@ -23,6 +23,7 @@ type Mongo interface {
 	GetList() interface{}
 	GetListAsArray() []interface{}
 	getCollection() string
+	getOptions() bson.M
 }
 
 // https://www.mongodb.com/docs/drivers/go/current/usage-examples/find/
@@ -153,7 +154,7 @@ func ReadMany(app Mongo) (err error) {
 	return
 }
 
-func Update(app Mongo) (result *mongo.UpdateResult, err error) {
+func Update(app Mongo, id primitive.ObjectID) (result *mongo.UpdateResult, err error) {
 	uri := os.Getenv("MONGODB_URI")
 	db := os.Getenv("MONGODB_DATABASE")
 	if uri == "" {
@@ -172,15 +173,11 @@ func Update(app Mongo) (result *mongo.UpdateResult, err error) {
 		}
 	}()
 	coll := client.Database(db).Collection(app.getCollection())
-	////////////////////////////////////
-	id, _ := primitive.ObjectIDFromHex("5eb3d668b31de5d588f42a7a")
-	filter := bson.D{{"_id", id}}
-	////////////////////////////////////
-	data, err := bson.Marshal(app.GetSingle())
+	filter := bson.D{{Key: "_id", Value: id}}
 	if err != nil {
 		return
 	}
-	update := bson.D{{"$set", data}}
+	update := app.getOptions()
 	result, err = coll.UpdateOne(context.TODO(), filter, update)
 	if err != nil {
 		return

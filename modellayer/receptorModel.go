@@ -1,7 +1,9 @@
 package modellayer
-
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 type Receptor struct {
-	ReceptorID     int
+	ReceptorID     primitive.ObjectID
 	RazonSocial    string
 	Rfc            string
 	Correo         string
@@ -21,6 +23,7 @@ type Receptor struct {
 
 func NewReceptor() *Receptor {
     return &Receptor{
+		ReceptorID: primitive.NewObjectID(),
         Control: NewControl(),
     }
 }

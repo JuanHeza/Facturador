@@ -20,8 +20,8 @@ type Negocio struct {
 	ConfiguracionNegocio
 	DatosGenerales `bson:",omitempty"`
 	Emisor  `bson:",omitempty"`
-	Sucursales     []Sucursal `json:",omitempty" bson:"sucursales,omitempty"`
-	Usuarios       []User     `json:",omitempty" bson:"usuarios,omitempty"`
+	Sucursales     []*Sucursal `json:",omitempty" bson:"sucursales,omitempty"`
+	Usuarios       []*User     `json:",omitempty" bson:"usuarios,omitempty"`
 	Control
 }
 
@@ -77,11 +77,9 @@ func (dg *DatosGenerales) SetNull() {
 	dg = &DatosGenerales{}
 }
 
-func (ng *Negocio) GenerateBearer(tm time.Time, period int) {
-	if tm.IsZero() {
-		tm = time.Now()
-	}
-	fmt.Println(tm)
+func (ng *Negocio) GenerateBearer() {
+	ng.Inicio = time.Now()
+	ng.Final = ng.Inicio.AddDate(0, ng.Periodo, 0)
 
 	bearerData := &Token{
 		NegocioId: ng.NegocioID.Hex(),
@@ -108,6 +106,7 @@ func (ng *Negocio) ToJson() (output string) {
 
 func NewNegocio() *Negocio {
     return &Negocio{
+		NegocioID: primitive.NewObjectID(),
         Control: NewControl(),
     }
 }

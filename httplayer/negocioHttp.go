@@ -9,7 +9,11 @@ import (
 	"github.com/juanheza/facturador/applayer"
 )
 
+var negocioApp applayer.NegocioApp
+
 func initNegocioRoutes(rt *gin.Engine) *gin.Engine {
+
+	negocioApp := &applayer.NegocioApp{}
 	/*
 	   dummy := &modellayer.Negocio{NegocioID: 12, Clave: "evilPanda"}
 	   dummy.GenerateBearer(time.Time{}, 1)
@@ -20,39 +24,27 @@ func initNegocioRoutes(rt *gin.Engine) *gin.Engine {
 		context.String(http.StatusOK, fmt.Sprintf("Hello %s!!", name))
 	})
 
-    /*
-    PARAMS
-        Negocio
-            Clave
-            PeriodoVigencia
-            DiasVigencia
-            Folios
-            RazonSocial
-            Rfc
-            RegimenFiscal
-            CodigoPostal
-        User 
-            Correo
-    */
-	rt.POST("/negocio", func(context *gin.Context) {
-		negocioApp := &applayer.NegocioApp{}
-		negocioApp.Create(context)
-		context.String(http.StatusOK, "OK")
-	})
+	/*
+	   PARAMS
+	       Negocio
+	           Clave
+	           PeriodoVigencia
+	           DiasVigencia
+	           Folios
+	           RazonSocial
+	           Rfc
+	           RegimenFiscal
+	           CodigoPostal
+	       User
+	           Correo
+	*/
+	rt.POST("/negocio", negocioApp.Create)
 
-	rt.PUT("/negocio", func(context *gin.Context) {
-		context.String(http.StatusOK, "Hello !!")
-	})
+	rt.PUT("/negocio", negocioApp.Update)
 
-	rt.GET("/negocio", func(context *gin.Context) {
-		negocioApp := &applayer.NegocioApp{}
-		negocioApp.Read(context)
-		context.String(http.StatusOK, "Hello !!")
-	})
+	rt.GET("/negocio/:id", negocioApp.Read)
 
-	rt.DELETE("/negocio", func(context *gin.Context) {
-		context.String(http.StatusOK, "Hello !!")
-	})
+	rt.DELETE("/negocio", negocioApp.Delete)
 
 	return rt
 }

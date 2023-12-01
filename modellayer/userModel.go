@@ -32,6 +32,7 @@ func (us *User) SetAdmin(negocio primitive.ObjectID){
 
 func NewUser() *User {
     return &User{
+        UsuarioID: primitive.NewObjectID(),
         Control: NewControl(),
     }
 }
