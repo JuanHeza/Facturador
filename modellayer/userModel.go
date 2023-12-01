@@ -28,3 +28,10 @@ func (us *User) SetAdmin(negocio primitive.ObjectID){
     us.Password = helperlayer.GeneratePassword()
     return
 }
+
+
+func NewUser() *User {
+    return &User{
+        Control: NewControl(),
+    }
+}

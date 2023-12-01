@@ -18,3 +18,9 @@ type Receptor struct {
 	Pais           string
 	Control
 }
+
+func NewReceptor() *Receptor {
+    return &Receptor{
+        Control: NewControl(),
+    }
+}

@@ -34,3 +34,10 @@ type Tax struct{
     IsRetention bool
     IsQuota bool
 }
+
+
+func NewVenta() *Venta {
+    return &Venta{
+        Control: NewControl(),
+    }
+}

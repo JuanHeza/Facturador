@@ -7,29 +7,35 @@ import (
 	"time"
 
 	"github.com/juanheza/facturador/helperlayer"
-    "go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
-
+// https://www.mongodb.com/docs/drivers/go/current/fundamentals/crud/write-operations/embedded-arrays/
 type Negocio struct {
-	NegocioID       primitive.ObjectID   `json:",omitempty" bson:"_id,omitempty"`
-	BearerToken     string               `json:"-" bson:"bearer_token,omitempty"`
-	Clave           string               `json:",omitempty"  bson:"clave,omitempty"`
-    Logo            string               `json:",omitempty"  bson:"logo,omitempty"`
-	ColorPrincipal  string               `json:",omitempty"  bson:"color_primario,omitempty"`
-	ColorSecundario string               `json:",omitempty"  bson:"color_secundario,omitempty"`
-	PeriodoVigencia helperlayer.Vigencia `json:",omitempty"  bson:"periodo_vigencia,omitempty"`
-	DiasVigencia    int                  `json:",omitempty"  bson:"dias_vigencia,omitempty"`
-    Folios          int                  `json:",omitempty"  bson:"folios,omitempty"`
-    Vigencia                             `bson:",omitempty"`
-	DatosGenerales                       `bson:",omitempty"`
-	DatosFiscales                        `bson:",omitempty"`
+	NegocioID       primitive.ObjectID `json:",omitempty" bson:"_id,omitempty"`
+	BearerToken     string             `json:"-" bson:"bearer_token,omitempty"`
+	Clave           string             `json:",omitempty"  bson:"clave,omitempty"`
+	Logo            string             `json:",omitempty"  bson:"logo,omitempty"`
+	ColorPrincipal  string             `json:",omitempty"  bson:"color_primario,omitempty"`
+	ColorSecundario string             `json:",omitempty"  bson:"color_secundario,omitempty"`
+	ConfiguracionNegocio
+	DatosGenerales `bson:",omitempty"`
+	Emisor  `bson:",omitempty"`
+	Sucursales     []Sucursal `json:",omitempty" bson:"sucursales,omitempty"`
+	Usuarios       []User     `json:",omitempty" bson:"usuarios,omitempty"`
 	Control
 }
 
+type ConfiguracionNegocio struct {
+	PeriodoVigencia helperlayer.Vigencia `json:",omitempty"  bson:"periodo_vigencia,omitempty"`
+	DiasVigencia    int                  `json:",omitempty"  bson:"dias_vigencia,omitempty"`
+	Folios          int                  `json:",omitempty"  bson:"folios,omitempty"`
+	Vigencia        `bson:",omitempty"`
+}
+
 type Vigencia struct {
-    Periodo int `json:",omitempty" bson:",omitempty"`
-    Inicio time.Time `json:",omitempty" bson:"inicio,omitempty"`
-    Final  time.Time `json:",omitempty" bson:"final,omitempty"`
+	Periodo int       `json:",omitempty" bson:",omitempty"`
+	Inicio  time.Time `json:",omitempty" bson:"inicio,omitempty"`
+	Final   time.Time `json:",omitempty" bson:"final,omitempty"`
 }
 
 type Link struct {
@@ -42,15 +48,18 @@ type Post struct {
 	Link
 }
 
-type DatosFiscales struct {
+type Emisor struct {
 	RazonSocial   string `json:",omitempty"  bson:"razon_social,omitempty"`
 	Rfc           string `json:",omitempty"  bson:"rfc,omitempty"`
 	RegimenFiscal string `json:",omitempty"  bson:"regimen_fiscal,omitempty"`
 	CodigoPostal  int    `json:",omitempty"  bson:"codigo_postal,omitempty"`
+	Csd           string `json:",omitempty"  bson:"csd,omitempty"`
+	Password      string `json:",omitempty"  bson:"password,omitempty"`
+	Key           string `json:",omitempty"  bson:"key,omitempty"`
 }
 
-func (df *DatosFiscales) SetNull() {
-	df = &DatosFiscales{}
+func (df *Emisor) SetNull() {
+	df = &Emisor{}
 }
 
 type DatosGenerales struct {
@@ -73,7 +82,7 @@ func (ng *Negocio) GenerateBearer(tm time.Time, period int) {
 		tm = time.Now()
 	}
 	fmt.Println(tm)
-    
+
 	bearerData := &Token{
 		NegocioId: ng.NegocioID.Hex(),
 		Clave:     ng.Clave,
@@ -95,4 +104,10 @@ func (ng *Negocio) ToJson() (output string) {
 	}
 	output = string(bits)
 	return
+}
+
+func NewNegocio() *Negocio {
+    return &Negocio{
+        Control: NewControl(),
+    }
 }

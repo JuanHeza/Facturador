@@ -4,8 +4,14 @@ type Factura struct {
 	FacturaId   int
 	RutaArcivo  string
 	FacturaUUID string
-	Negocio
+	Emisor
 	Receptor
-	Venta
+	Tickets []Venta
 	Control
+}
+
+func NewFactura() *Factura {
+    return &Factura{
+        Control: NewControl(),
+    }
 }
