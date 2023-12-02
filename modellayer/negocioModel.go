@@ -7,8 +7,10 @@ import (
 	"time"
 
 	"github.com/juanheza/facturador/helperlayer"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
+
 // https://www.mongodb.com/docs/drivers/go/current/fundamentals/crud/write-operations/embedded-arrays/
 type Negocio struct {
 	NegocioID       primitive.ObjectID `json:",omitempty" bson:"_id,omitempty"`
@@ -19,9 +21,9 @@ type Negocio struct {
 	ColorSecundario string             `json:",omitempty"  bson:"color_secundario,omitempty"`
 	ConfiguracionNegocio
 	DatosGenerales `bson:",omitempty"`
-	Emisor  `bson:",omitempty"`
+	Emisor         `bson:",omitempty"`
 	Sucursales     []*Sucursal `json:",omitempty" bson:"sucursales,omitempty"`
-	Usuarios       []*User     `json:",omitempty" bson:"usuarios,omitempty"`
+	Owner          User        `json:",omitempty" bson:"owner,omitempty"`
 	Control
 }
 
@@ -105,8 +107,18 @@ func (ng *Negocio) ToJson() (output string) {
 }
 
 func NewNegocio() *Negocio {
-    return &Negocio{
+	return &Negocio{
 		NegocioID: primitive.NewObjectID(),
-        Control: NewControl(),
+		Control:   NewControl(),
+	}
+}
+
+func (ng *Negocio) ToFilter() (filter bson.M){
+    data, err := bson.Marshal(ng)
+    if err != nil {
+        return
     }
+    err = bson.Unmarshal(data, &filter)
+    filter = bson.M{"_id": ng.NegocioID}
+    return
 }

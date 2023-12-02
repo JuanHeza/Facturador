@@ -1,5 +1,10 @@
 package modellayer
+
 import (
+	"encoding/json"
+	"fmt"
+
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 type Receptor struct {
@@ -26,4 +31,24 @@ func NewReceptor() *Receptor {
 		ReceptorID: primitive.NewObjectID(),
         Control: NewControl(),
     }
+}
+
+func (rc *Receptor) ToFilter() (filter bson.M){
+    data, err := bson.Marshal(rc)
+    if err != nil {
+        return
+    }
+    err = bson.Unmarshal(data, &filter)
+    filter = bson.M{"_id":rc.ReceptorID}
+    return
+}
+
+func (rc *Receptor) ToJson() (output string) {
+    bits, err := json.Marshal(rc)
+    if err != nil {
+        fmt.Printf("Error: %s", err)
+        return
+    }
+    output = string(bits)
+    return
 }

@@ -20,6 +20,13 @@ type NegocioApp struct {
 
 var negocioApp NegocioApp
 
+func NewNegocioApp() *NegocioApp {
+	return &NegocioApp{
+		Response: modellayer.NewResponse(),
+		store:    storelayer.NewNegocioStore(),
+	}
+}
+
 func (ng *NegocioApp) Create(context *gin.Context) {
 	// Call BindJSON to bind the received JSON
 	negocioApp.decode(context)
@@ -27,18 +34,21 @@ func (ng *NegocioApp) Create(context *gin.Context) {
 
 	negocioApp.store.Single.GenerateBearer()
 	user := userApp.CreateAdmin(context, negocioApp.store.Single.NegocioID)
-	negocioApp.store.Single.Usuarios = append(negocioApp.store.Single.Usuarios, user)
+	negocioApp.store.Single.Owner = *user
 
 	_, err := negocioApp.store.Create()
 	if err != nil {
+		log.Println(err)
 		return
 	}
 	negocioApp.Response = modellayer.Response{
 		Id:      helperlayer.Success,
-		Message: negocioApp.store.Single.ToJson(),
+		Message: "Negocio Creado",
 	}
+	negocioApp.Response.Set("Single", negocioApp.store.Single)
 	context.String(http.StatusOK, negocioApp.Response.ToJson())
 }
+
 func (ng *NegocioApp) Read(context *gin.Context) {
 	id := context.Param("id")
 	negocioApp.decode(context)
@@ -52,18 +62,27 @@ func (ng *NegocioApp) Read(context *gin.Context) {
 	} else {
 		negocioApp.store.ReadMany()
 	}
-	context.String(http.StatusOK, "Hello !!")
+    negocioApp.Response = modellayer.Response{
+        Id:      helperlayer.Success,
+        Message: "Negocios",
+    }
+    negocioApp.Response.Set("List", negocioApp.store.List)
+    negocioApp.Response.Set("Single", negocioApp.store.Single)
+	context.String(http.StatusOK, negocioApp.Response.ToJson())
 }
+
 func (ng *NegocioApp) Update(context *gin.Context) {
 	negocioApp.decode(context)
 	negocioApp.store.Update()
 	context.String(http.StatusOK, "Hello !!")
 }
+
 func (ng *NegocioApp) Delete(context *gin.Context) {
 	negocioApp.decode(context)
 	negocioApp.store.Delete()
 	context.String(http.StatusOK, "Hello !!")
 }
+
 func (ng *NegocioApp) GetStore() *storelayer.NegocioStore {
 	return &ng.store
 }

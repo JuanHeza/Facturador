@@ -1,7 +1,11 @@
 package modellayer
 
 import (
+	"encoding/json"
+	"fmt"
+
 	"github.com/juanheza/facturador/helperlayer"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -30,9 +34,29 @@ func (us *User) SetAdmin(negocio primitive.ObjectID){
 }
 
 
+func (us *User) ToFilter() (filter bson.M){
+    data, err := bson.Marshal(us)
+    if err != nil {
+        return
+    }
+    err = bson.Unmarshal(data, &filter)
+    filter = bson.M{"_id":us.UsuarioID}
+    return
+}
+
 func NewUser() *User {
     return &User{
         UsuarioID: primitive.NewObjectID(),
         Control: NewControl(),
     }
+}
+
+func (us *User) ToJson() (output string) {
+    bits, err := json.Marshal(us)
+    if err != nil {
+        fmt.Printf("Error: %s", err)
+        return
+    }
+    output = string(bits)
+    return
 }

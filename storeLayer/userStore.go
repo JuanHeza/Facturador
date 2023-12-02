@@ -45,21 +45,26 @@ func (us *UserStore) Delete() (err error) {
 	return
 }
 
-func (us *UserStore) GetSingle() (single interface{}) {
+func (us *UserStore) GetSingle() (single Model) {
 	single = us.Single
 	return
 }
 
-func (us *UserStore) GetList() (list interface{}) {
-	list = us.List
+func (us *UserStore) GetList() (list *[]Model) {
+    aux := []Model{}
+	for _, d := range us.List {
+        aux = append(aux, d)
+    }
+    list = &aux
 	return
 }
 
-func (us *UserStore) GetListAsArray() (list []interface{}) {
-	for _, element := range us.List {
-		list = append(list, element)
-	}
-	return
+func (us *UserStore) GetListInterface() (list []interface{}){
+    var models = us.GetList()
+    for _, model := range *models {
+        list = append(list, model)
+    }
+    return
 }
 
 func (us *UserStore) getCollection() string {
@@ -68,4 +73,13 @@ func (us *UserStore) getCollection() string {
 
 func (us *UserStore) getOptions() bson.M {
 	return us.Options
+}
+
+func (us *UserStore) getProjection(projection string) bson.M{
+    projectionCatalog := map[string]bson.M{
+        "id": bson.M{
+            "_id": 1,
+        },
+    }
+    return projectionCatalog[projection]
 }

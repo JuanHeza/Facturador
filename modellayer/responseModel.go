@@ -12,6 +12,18 @@ type Response struct {
 	Message string
 	Data    map[string]any
 }
+func NewResponse() Response{
+    return Response{
+        Data: map[string]any{},
+    }
+}
+
+func (ng *Response) Set(key string, value any) {
+    if ng.Data == nil {
+        ng.Data = make(map[string]any)
+    }
+    ng.Data[key] = value
+}
 
 func (ng *Response) ToJson() (output string) {
 	bits, err := json.Marshal(ng)

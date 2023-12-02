@@ -1,8 +1,7 @@
 package applayer
 
 import (
-
-    "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
 
 type App interface {
@@ -11,6 +10,7 @@ type App interface {
     Update(ctx *gin.Context)
     Delete(ctx *gin.Context)
 }
+
 /*
 type app struct {
     store storelayer.Store

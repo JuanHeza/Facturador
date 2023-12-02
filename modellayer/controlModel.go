@@ -8,7 +8,7 @@ import (
 
 type Control struct {
 	Estatus   helperlayer.Estatus `json:",omitempty"  bson:",omitempty"`
-	Eliminado helperlayer.Estatus `json:"-,omitempty"  bson:",omitempty"`
+	Eliminado helperlayer.Estatus `json:"-"  bson:",omitempty"`
 	Creacion  ControlData         `json:",omitempty"  bson:",omitempty"`
 	Edicion   ControlData         `json:",omitempty"  bson:",omitempty"`
 }

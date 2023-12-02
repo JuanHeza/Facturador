@@ -45,26 +45,40 @@ func (rc *ReceptorStore) Delete() (err error) {
 	return
 }
 
-func (rc *ReceptorStore) GetSingle() (single interface{}) {
+func (rc *ReceptorStore) GetSingle() (single Model) {
 	single = rc.Single
 	return
 }
 
-func (rc *ReceptorStore) GetList() (list interface{}) {
-	list = rc.List
+func (rc *ReceptorStore) GetList() (list *[]Model) {
+    aux := []Model{}
+	for _, d := range rc.List {
+        aux = append(aux, d)
+    }
+    list = &aux
 	return
+}
+func (rc *ReceptorStore) GetListInterface() (list []interface{}){
+    var models = rc.GetList()
+    for _, model := range *models {
+        list = append(list, model)
+    }
+    return
 }
 
-func (rc *ReceptorStore) GetListAsArray() (list []interface{}) {
-	for _, element := range rc.List {
-		list = append(list, element)
-	}
-	return
-}
 
 func (rc *ReceptorStore) getCollection() string {
 	return helperlayer.Receptor.ToString()
 }
 func (rc *ReceptorStore) getOptions() bson.M {
 	return rc.Options
+}
+
+func (rc *ReceptorStore) getProjection(projection string) bson.M{
+    projectionCatalog := map[string]bson.M{
+        "id": bson.M{
+            "_id": 1,
+        },
+    }
+    return projectionCatalog[projection]
 }

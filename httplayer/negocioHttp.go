@@ -1,8 +1,7 @@
 package httplayer
 
 import (
-	"fmt"
-	"net/http"
+	
 	_ "time"
 
 	"github.com/gin-gonic/gin"
@@ -13,16 +12,7 @@ var negocioApp applayer.NegocioApp
 
 func initNegocioRoutes(rt *gin.Engine) *gin.Engine {
 
-	negocioApp := &applayer.NegocioApp{}
-	/*
-	   dummy := &modellayer.Negocio{NegocioID: 12, Clave: "evilPanda"}
-	   dummy.GenerateBearer(time.Time{}, 1)
-	   fmt.Println(dummy)
-	*/
-	rt.GET("/negocio/:name", func(context *gin.Context) {
-		name := context.Param("name")
-		context.String(http.StatusOK, fmt.Sprintf("Hello %s!!", name))
-	})
+	negocioApp := applayer.NewNegocioApp()
 
 	/*
 	   PARAMS
@@ -38,13 +28,19 @@ func initNegocioRoutes(rt *gin.Engine) *gin.Engine {
 	       User
 	           Correo
 	*/
-	rt.POST("/negocio", negocioApp.Create)
+	rt.POST("/negocio", negocioApp.Create) // privacidad maxima
+    
+	rt.PUT("/negocio", negocioApp.Update) // administradores
 
-	rt.PUT("/negocio", negocioApp.Update)
+	rt.GET("/negocio", negocioApp.Read) //publico con params para data
 
-	rt.GET("/negocio/:id", negocioApp.Read)
+	rt.DELETE("/negocio", negocioApp.Delete) 
 
-	rt.DELETE("/negocio", negocioApp.Delete)
+	rt.PUT("/negocio/:id", negocioApp.Update) // administradores
+
+	rt.GET("/negocio/:id", negocioApp.Read) //publico con params para data
+
+	rt.DELETE("/negocio/:id", negocioApp.Delete) // privacidad maxima
 
 	return rt
 }
