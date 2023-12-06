@@ -10,8 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/juanheza/facturador/helperlayer"
-	"github.com/juanheza/facturador/modellayer"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	_ "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GetTestGinContext() *gin.Context {
@@ -27,10 +26,10 @@ func GetTestGinContext() *gin.Context {
 }
 
 func buildBody(i interface{}, c *gin.Context) *gin.Context {
-    body, err := json.Marshal(i)
-    if err != nil {
-        panic(err)
-    }
+	body, err := json.Marshal(i)
+	if err != nil {
+		panic(err)
+	}
 	// the request body must be an io.ReadCloser
 	// the bytes buffer though doesn't implement io.Closer,
 	// so you wrap it in a no-op closer
@@ -41,7 +40,7 @@ func buildBody(i interface{}, c *gin.Context) *gin.Context {
 func TestNegocioApp_Create(t *testing.T) {
 	type args struct {
 		context *gin.Context
-        data map[string]interface{}
+		data    map[string]interface{}
 	}
 	tests := []struct {
 		name string
@@ -53,19 +52,19 @@ func TestNegocioApp_Create(t *testing.T) {
 			ng:   &NegocioApp{},
 			args: args{
 				context: GetTestGinContext(),
-                data: map[string]interface{}{
-                    "clave": "billingbull",
-                    "colorPrincipal": "#defeca",
-                    "colorSecundario": "#cebada",
-                    "configuracionNegocio": map[string]interface{}{
-                        "periodoVigencia": helperlayer.Dias,
-                        "diasVigencia": 10,
-                        "folio": 20,
-                        "vigencia": map[string]interface{}{
-                            "periodo": 12,
-                        },
-                    },
-                },
+				data: map[string]interface{}{
+					"clave":           "billingbull",
+					"colorPrincipal":  "#defeca",
+					"colorSecundario": "#cebada",
+					"configuracionNegocio": map[string]interface{}{
+						"periodoVigencia": helperlayer.Dias,
+						"diasVigencia":    10,
+						"folio":           20,
+						"vigencia": map[string]interface{}{
+							"periodo": 12,
+						},
+					},
+				},
 			},
 		},
 	}

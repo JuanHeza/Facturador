@@ -15,6 +15,14 @@ type UserStore struct {
 	Options bson.M
 }
 
+func NewUserStore() UserStore{
+    return UserStore{
+        Single: modellayer.NewUser(),
+        List: []*modellayer.User{},
+        Options: bson.M{},
+    }
+}
+
 func (us *UserStore) Create() (res *mongo.InsertOneResult, err error) {
 	us.Single.Control.Init(1)
 	res, err = Create(us)
