@@ -1,6 +1,5 @@
 package modellayer
 
-// https://blog.reedsy.com/fantasy-map-generators/
 import (
 	"encoding/json"
 	"fmt"
@@ -11,7 +10,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-// https://www.mongodb.com/docs/drivers/go/current/fundamentals/crud/write-operations/embedded-arrays/
 type Negocio struct {
 	NegocioID       primitive.ObjectID `json:",omitempty" bson:"_id,omitempty"`
 	BearerToken     string             `json:"-" bson:"bearer_token,omitempty"`

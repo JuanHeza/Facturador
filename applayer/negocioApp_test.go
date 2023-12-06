@@ -27,22 +27,21 @@ func GetTestGinContext() *gin.Context {
 }
 
 func buildBody(i interface{}, c *gin.Context) *gin.Context {
-	jsonStr, err := json.Marshal(i)
-	if err != nil {
-		panic(err)
-	}
-
+    body, err := json.Marshal(i)
+    if err != nil {
+        panic(err)
+    }
 	// the request body must be an io.ReadCloser
 	// the bytes buffer though doesn't implement io.Closer,
 	// so you wrap it in a no-op closer
-	c.Request, _ = http.NewRequest("Get", "/negocio", bytes.NewBuffer(jsonStr))
+	c.Request, _ = http.NewRequest("Get", "/negocio", bytes.NewBuffer(body))
 	return c
 }
 
 func TestNegocioApp_Create(t *testing.T) {
 	type args struct {
 		context *gin.Context
-		data    modellayer.Negocio
+        data map[string]interface{}
 	}
 	tests := []struct {
 		name string
@@ -54,20 +53,19 @@ func TestNegocioApp_Create(t *testing.T) {
 			ng:   &NegocioApp{},
 			args: args{
 				context: GetTestGinContext(),
-				data: modellayer.Negocio{
-					NegocioID:       primitive.NewObjectID(),
-					Clave:           "billingbull",
-					ColorPrincipal:  "#defeca",
-					ColorSecundario: "#cebada",
-					ConfiguracionNegocio: modellayer.ConfiguracionNegocio{
-						PeriodoVigencia: helperlayer.Dias,
-						DiasVigencia:    10,
-						Folios:          20,
-						Vigencia: modellayer.Vigencia{
-							Periodo: 12,
-						},
-					},
-				},
+                data: map[string]interface{}{
+                    "clave": "billingbull",
+                    "colorPrincipal": "#defeca",
+                    "colorSecundario": "#cebada",
+                    "configuracionNegocio": map[string]interface{}{
+                        "periodoVigencia": helperlayer.Dias,
+                        "diasVigencia": 10,
+                        "folio": 20,
+                        "vigencia": map[string]interface{}{
+                            "periodo": 12,
+                        },
+                    },
+                },
 			},
 		},
 	}

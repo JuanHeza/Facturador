@@ -9,8 +9,6 @@ type Sucursal struct{
     Control
 }
 
-// https://www.mongodb.com/docs/drivers/go/current/fundamentals/crud/read-operations/project/
-
 func NewSucursal() *Sucursal {
     return &Sucursal{
         Control: NewControl(),

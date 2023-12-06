@@ -31,7 +31,6 @@ type Model interface{
     ToJson() string
     ToFilter() (filter bson.M)
 }
-// https://www.mongodb.com/docs/drivers/go/current/usage-examples/find/
 
 func Create(app Mongo) (result *mongo.InsertOneResult, err error) {
 	uri := os.Getenv("MONGODB_URI")
@@ -170,6 +169,85 @@ func ReadMany(app Mongo) (err error) {
 	}
 fmt.Println(app)
 	return
+}
+
+func ReadOneCriteria(app Mongo, criteria bson.D, projection ...*options.FindOneOptions) (err error) {
+    uri := os.Getenv("MONGODB_URI")
+    db := os.Getenv("MONGODB_DATABASE")
+    if uri == "" {
+        log.Fatal("You must set your 'MONGODB_URI' environment variable.")
+    }
+
+    client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+    if err != nil {
+        log.Println("Panic at conect@ReadMany: ", err)
+        panic(err)
+        return
+    }
+    defer func() {
+        if err := client.Disconnect(context.TODO()); err != nil {
+            log.Println("Panic at disconect@ReadMany: ", err)
+            panic(err)
+            return
+        }
+    }()
+    //filter, err := bson.Marshal()
+    if err != nil {
+        return
+    }
+    coll := client.Database(db).Collection(app.getCollection())
+    err = coll.FindOne(context.TODO(), criteria, projection...).Decode(app.GetSingle())
+    if err == mongo.ErrNoDocuments {
+        fmt.Println("No document was found")
+        return
+    }
+    if err != nil {
+        log.Println("Panic at FindOne@Read: ", err)
+        return
+    }
+    return
+}
+
+func ReadManyCriteria(app Mongo, criteria bson.D) (err error) {
+        uri := os.Getenv("MONGODB_URI")
+        db := os.Getenv("MONGODB_DATABASE")
+        if uri == "" {
+            log.Fatal("You must set your 'MONGODB_URI' environment variable.")
+        }
+
+        client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+        if err != nil {
+            log.Println("Panic at conect@ReadMany: ", err)
+            panic(err)
+            return
+        }
+        defer func() {
+            if err := client.Disconnect(context.TODO()); err != nil {
+                log.Println("Panic at disconect@ReadMany: ", err)
+                panic(err)
+                return
+            }
+        }()
+        //filter, err := bson.Marshal()
+        if err != nil {
+            return
+        }
+        coll := client.Database(db).Collection(app.getCollection())
+        cursor, err := coll.Find(context.TODO(), criteria, options.Find().SetProjection(app.getProjection("id")))
+        if err != nil {
+            log.Println("Panic at Find@ReadMany: ", err)
+            panic(err)
+            return
+        }
+        // end find
+
+        if err = cursor.All(context.TODO(), app.GetList()); err != nil {
+            log.Println("Panic at cursor@ReadMany: ", err)
+            panic(err)
+            return
+        }
+    fmt.Println(app)
+        return
 }
 
 func Update(app Mongo, id primitive.ObjectID) (result *mongo.UpdateResult, err error) {
