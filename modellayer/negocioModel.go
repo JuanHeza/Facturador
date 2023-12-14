@@ -19,7 +19,7 @@ type Negocio struct {
 	ColorSecundario string             `json:",omitempty"  bson:"color_secundario,omitempty"`
 	ConfiguracionNegocio
 	DatosGenerales `bson:",omitempty"`
-	Emisor         `bson:",omitempty"`
+	Emisor         `bson:"emisor,omitempty"`
 	Sucursales     []*Sucursal `json:",omitempty" bson:"sucursales,omitempty"`
 	Owner          User        `json:",omitempty" bson:"owner,omitempty"`
 	Control

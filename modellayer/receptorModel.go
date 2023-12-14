@@ -14,7 +14,7 @@ type Receptor struct {
 	Correo         string
 	RegimenFiscal  string
 	UsoCFDI        string
-	TipoVenta      string
+	TipoVenta      string // mover a ticket
 	Calle          string
 	NumeroExterior int
 	NumeroInterior int

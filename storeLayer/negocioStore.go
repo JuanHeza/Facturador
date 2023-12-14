@@ -90,6 +90,14 @@ func (ns *NegocioStore) getProjection(projection string) bson.M{
     projectionCatalog := map[string]bson.M{
         "id": bson.M{
             "_id": 1,
+            "colorSecundario": 1,
+            "colorPrincipal": 1,
+            "logo": 1,
+            "clave": 1,
+            
+        },
+        "expandesd": bson.M{
+            "_id": 1,
         },
     }
 	return projectionCatalog[projection]
