@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 
 	"github.com/juanheza/facturador/helperlayer"
 	"github.com/juanheza/facturador/modellayer"
@@ -27,6 +28,7 @@ func NewNegocioApp() *NegocioApp {
 
 func (ng *NegocioApp) Create(context *gin.Context) {
 	// Call BindJSON to bind the received JSON
+
 	ng.decode(context)
 	userApp := NewUserApp()
 
@@ -49,7 +51,7 @@ func (ng *NegocioApp) Create(context *gin.Context) {
 
 func (ng *NegocioApp) Read(context *gin.Context) {
 	id := context.Param("id")
-	ng.decode(context)
+	//ng.decode(context)
 	if id != "" {
 		objID, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
@@ -87,7 +89,7 @@ func (ng *NegocioApp) GetStore() *storelayer.NegocioStore {
 
 func (ng *NegocioApp) decode(context *gin.Context) {
 	negocio := modellayer.NewNegocio()
-	if err := context.BindJSON(negocio); err != nil {
+	if err := context.ShouldBindBodyWith(negocio, binding.JSON); err != nil {
 		log.Println(err)
 	}
 	if negocio.NegocioID == primitive.NilObjectID {

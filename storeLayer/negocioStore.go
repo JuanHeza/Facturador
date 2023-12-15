@@ -7,6 +7,7 @@ import (
 	"github.com/juanheza/facturador/helperlayer"
 	"github.com/juanheza/facturador/modellayer"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -19,7 +20,7 @@ type NegocioStore struct {
 func NewNegocioStore() NegocioStore {
 	return NegocioStore{
 		Single:  modellayer.NewNegocio(),
-		List:    []*modellayer.Negocio{},
+		List:    make([]*modellayer.Negocio, 0),
 		Options: bson.M{},
 	}
 }
@@ -112,6 +113,14 @@ func (ns *NegocioStore) getProjection(projection string) bson.M {
 		},
 	}
 	return projectionCatalog[projection]
+}
+func (ns *NegocioStore) SetList(list []interface{}) {
+	dst := make([]*modellayer.Negocio, len(list))
+	for i := range list {
+		one := &modellayer.Negocio{}
+		dst[i] = list[i].(primitive.D).decode(one)
+	}
+	ns.List = dst
 }
 func (ns *NegocioStore) UpdateTokenAdmin(user *modellayer.User) {
 	ns.Options = bson.M{

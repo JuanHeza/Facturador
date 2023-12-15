@@ -73,7 +73,13 @@ func (rc *ReceptorStore) getCollection() string {
 func (rc *ReceptorStore) getOptions() bson.M {
 	return rc.Options
 }
-
+func (rc *ReceptorStore) SetList(list []interface{}) {
+	dst := make([]*modellayer.Receptor, len(list))
+	for i := range list {
+		dst[i] = list[i].(*modellayer.Receptor)
+	}
+	rc.List = dst
+}
 func (rc *ReceptorStore) getProjection(projection string) bson.M{
     projectionCatalog := map[string]bson.M{
         "id": bson.M{

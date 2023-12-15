@@ -15,12 +15,12 @@ type UserStore struct {
 	Options bson.M
 }
 
-func NewUserStore() UserStore{
-    return UserStore{
-        Single: modellayer.NewUser(),
-        List: []*modellayer.User{},
-        Options: bson.M{},
-    }
+func NewUserStore() UserStore {
+	return UserStore{
+		Single:  modellayer.NewUser(),
+		List:    []*modellayer.User{},
+		Options: bson.M{},
+	}
 }
 
 func (us *UserStore) Create() (res *mongo.InsertOneResult, err error) {
@@ -59,20 +59,20 @@ func (us *UserStore) GetSingle() (single Model) {
 }
 
 func (us *UserStore) GetList() (list *[]Model) {
-    aux := []Model{}
+	aux := []Model{}
 	for _, d := range us.List {
-        aux = append(aux, d)
-    }
-    list = &aux
+		aux = append(aux, d)
+	}
+	list = &aux
 	return
 }
 
-func (us *UserStore) GetListInterface() (list []interface{}){
-    var models = us.GetList()
-    for _, model := range *models {
-        list = append(list, model)
-    }
-    return
+func (us *UserStore) GetListInterface() (list []interface{}) {
+	var models = us.GetList()
+	for _, model := range *models {
+		list = append(list, model)
+	}
+	return
 }
 
 func (us *UserStore) getCollection() string {
@@ -82,12 +82,18 @@ func (us *UserStore) getCollection() string {
 func (us *UserStore) getOptions() bson.M {
 	return us.Options
 }
-
-func (us *UserStore) getProjection(projection string) bson.M{
-    projectionCatalog := map[string]bson.M{
-        "id": bson.M{
-            "_id": 1,
-        },
-    }
-    return projectionCatalog[projection]
+func (us *UserStore) SetList(list []interface{}) {
+	dst := make([]*modellayer.User, len(list))
+	for i := range list {
+		dst[i] = list[i].(*modellayer.User)
+	}
+	us.List = dst
+}
+func (us *UserStore) getProjection(projection string) bson.M {
+	projectionCatalog := map[string]bson.M{
+		"id": bson.M{
+			"_id": 1,
+		},
+	}
+	return projectionCatalog[projection]
 }

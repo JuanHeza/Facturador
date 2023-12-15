@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/juanheza/facturador/modellayer"
@@ -14,7 +15,6 @@ type UserApp struct {
 	Response modellayer.Response
 	store    storelayer.UserStore
 }
-
 
 func NewUserApp() *UserApp {
 	return &UserApp{
@@ -33,7 +33,7 @@ func (us *UserApp) Create(context *gin.Context) {
 }
 
 func (us *UserApp) CreateAdmin(context *gin.Context, negocio primitive.ObjectID) *modellayer.User {
-	//userApp.decode(context)
+	us.decode(context)
 	us.store.Single.SetAdmin(negocio)
 	_, err := us.store.Create()
 	if err != nil {
@@ -63,7 +63,7 @@ func (us *UserApp) GetStore() *storelayer.UserStore {
 
 func (us *UserApp) decode(context *gin.Context) {
 	user := modellayer.NewUser()
-	if err := context.BindJSON(user); err != nil {
+	if err := context.ShouldBindBodyWith(user, binding.JSON); err != nil {
 		log.Println(err)
 	}
 	if user.UsuarioID == primitive.NilObjectID {

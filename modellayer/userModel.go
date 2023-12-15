@@ -17,7 +17,7 @@ type User struct{
 	ApellidoPaterno string `bson:"apellidoPaterno,omitempty"`
 	ApellidoMaterno string `bson:"apellidoMaterno,omitempty"`
 	Correo string `bson:"correo,omitempty"`
-	PerfilID helperlayer.Perfil `bson:"perfil,omitempty"`
+	PerfilID helperlayer.Perfil `bson:"perfilId,omitempty"`
     Sucursales []primitive.ObjectID `bson:"sucursales,omitempty"`
     Negocio primitive.ObjectID `bson:"negocio,omitempty"`
 	Control
