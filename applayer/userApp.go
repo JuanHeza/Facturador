@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/juanheza/facturador/modellayer"
@@ -15,11 +16,16 @@ type UserApp struct {
 	store    storelayer.UserStore
 }
 
-var userApp UserApp
+func NewUserApp() *UserApp {
+	return &UserApp{
+		Response: modellayer.NewResponse(),
+		store:    storelayer.NewUserStore(),
+	}
+}
 
 func (us *UserApp) Create(context *gin.Context) {
-	userApp.decode(context)
-	_, err := userApp.store.Create()
+	us.decode(context)
+	_, err := us.store.Create()
 	if err != nil {
 		return
 	}
@@ -27,28 +33,28 @@ func (us *UserApp) Create(context *gin.Context) {
 }
 
 func (us *UserApp) CreateAdmin(context *gin.Context, negocio primitive.ObjectID) *modellayer.User {
-	userApp.decode(context)
-	userApp.store.Single.SetAdmin(negocio)
-	_, err := userApp.store.Create()
+	us.decode(context)
+	us.store.Single.SetAdmin(negocio)
+	_, err := us.store.Create()
 	if err != nil {
 		return nil
 	}
-	return userApp.store.Single
+	return us.store.Single
 }
 
 func (us *UserApp) Read(context *gin.Context) {
-	userApp.decode(context)
-	userApp.store.Read()
+	us.decode(context)
+	us.store.Read()
 	return
 }
 func (us *UserApp) Update(context *gin.Context) {
-	userApp.decode(context)
-	userApp.store.Update()
+	us.decode(context)
+	us.store.Update()
 	return
 }
 func (us *UserApp) Delete(context *gin.Context) {
-	userApp.decode(context)
-	userApp.store.Delete()
+	us.decode(context)
+	us.store.Delete()
 	return
 }
 func (us *UserApp) GetStore() *storelayer.UserStore {
@@ -57,7 +63,7 @@ func (us *UserApp) GetStore() *storelayer.UserStore {
 
 func (us *UserApp) decode(context *gin.Context) {
 	user := modellayer.NewUser()
-	if err := context.BindJSON(user); err != nil {
+	if err := context.ShouldBindBodyWith(user, binding.JSON); err != nil {
 		log.Println(err)
 	}
 	if user.UsuarioID == primitive.NilObjectID {

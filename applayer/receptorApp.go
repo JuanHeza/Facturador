@@ -4,6 +4,7 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/juanheza/facturador/modellayer"
@@ -56,7 +57,7 @@ func (rc *ReceptorApp) GetStore() *storelayer.ReceptorStore {
 
 func (rc *ReceptorApp) decode(context *gin.Context) {
 	receptor := &modellayer.Receptor{}
-	if err := context.BindJSON(receptor); err != nil {
+	if err := context.ShouldBindBodyWith(receptor, binding.JSON); err != nil {
 		log.Println(err)
 	}
 	rc.store.Single = receptor
