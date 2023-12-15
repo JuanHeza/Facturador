@@ -1,16 +1,17 @@
 package modellayer
 
 import (
+	"encoding/json"
 	"time"
-    "encoding/json"
-    "github.com/juanheza/facturador/helperlayer"
+
+	"github.com/juanheza/facturador/helperlayer"
 )
 
 type Token struct {
-	NegocioId string
-	Clave     string
-	Inicio    int64
-	Fin       int64
+	NegocioId string `json:",omitempty"`
+	Clave     string `json:",omitempty"`
+	Inicio    int64  `json:",omitempty"`
+	Fin       int64  `json:",omitempty"`
 }
 
 func (tk *Token) Validate() bool {
@@ -21,19 +22,21 @@ func (tk *Token) Validate() bool {
 }
 
 func NewToken(ng *Negocio) (bearerData *Token) {
-    ng.Inicio = time.Now()
-    ng.Final = ng.Inicio.AddDate(0, ng.Periodo, 0)
+	auxInicio := time.Now()
+	ng.Inicio = &auxInicio
+	auxFinal := ng.Inicio.AddDate(0, ng.Periodo, 0)
+	ng.Final = &auxFinal
 
-    bearerData = &Token{
-        NegocioId: ng.NegocioID.Hex(),
-        Clave:     ng.Clave,
-        Inicio:    ng.Inicio.Unix(),
-        Fin:       ng.Final.Unix(),
-    }
-    plaintext, err := json.Marshal(bearerData)
-    if err != nil {
-        return
-    }
-    ng.BearerToken = helperlayer.Encrypt(plaintext)
-    return 
+	bearerData = &Token{
+		NegocioId: ng.NegocioID.Hex(),
+		Clave:     ng.Clave,
+		Inicio:    ng.Inicio.Unix(),
+		Fin:       ng.Final.Unix(),
+	}
+	plaintext, err := json.Marshal(bearerData)
+	if err != nil {
+		return
+	}
+	ng.BearerToken = helperlayer.Encrypt(plaintext)
+	return
 }

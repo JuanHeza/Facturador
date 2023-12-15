@@ -37,7 +37,6 @@ func (us *UserStore) CreateMany() (res *mongo.InsertManyResult, err error) {
 
 func (us *UserStore) Read() (err error) {
 	err = Read(us)
-	log.Println(us)
 	return
 }
 
@@ -82,16 +81,19 @@ func (us *UserStore) getCollection() string {
 func (us *UserStore) getOptions() bson.M {
 	return us.Options
 }
-func (us *UserStore) SetList(list []interface{}) {
-	dst := make([]*modellayer.User, len(list))
-	for i := range list {
-		dst[i] = list[i].(*modellayer.User)
-	}
-	us.List = dst
+func (us *UserStore) SetList(cursor *mongo.Cursor) (err error) {
+	/*
+		dst := make([]*modellayer.User, len(list))
+		for i := range list {
+			dst[i] = list[i].(*modellayer.User)
+		}
+		us.List = dst
+	*/
+	return
 }
 func (us *UserStore) getProjection(projection string) bson.M {
 	projectionCatalog := map[string]bson.M{
-		"id": bson.M{
+		"id": {
 			"_id": 1,
 		},
 	}

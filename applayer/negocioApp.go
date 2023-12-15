@@ -1,6 +1,7 @@
 package applayer
 
 import (
+	"errors"
 	"log"
 	"net/http"
 	"time"
@@ -26,31 +27,44 @@ func NewNegocioApp() *NegocioApp {
 	}
 }
 
+func (ng *NegocioApp) Clean() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ng.store = storelayer.NewNegocioStore()
+	}
+}
+
 func (ng *NegocioApp) Create(context *gin.Context) {
 	// Call BindJSON to bind the received JSON
 
 	ng.decode(context)
 	userApp := NewUserApp()
+	if err := ng.ValidateCreation(); err != nil{
+		ng.Response = modellayer.Response{
+			Id:      helperlayer.Error,
+			Message: err.Error(),
+		}
+	}else{ 
+		ng.store.Single.GenerateBearer()
+		user := userApp.CreateAdmin(context, ng.store.Single.NegocioID)
+		ng.store.Single.Owner = *user
 
-	ng.store.Single.GenerateBearer()
-	user := userApp.CreateAdmin(context, ng.store.Single.NegocioID)
-	ng.store.Single.Owner = *user
-
-	_, err := ng.store.Create()
-	if err != nil {
-		log.Println(err)
-		return
+		_, err := ng.store.Create()
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		ng.Response = modellayer.Response{
+			Id:      helperlayer.Success,
+			Message: "Negocio Creado",
+		}
+		ng.Response.Set("Single", ng.store.Single)
 	}
-	ng.Response = modellayer.Response{
-		Id:      helperlayer.Success,
-		Message: "Negocio Creado",
-	}
-	ng.Response.Set("Single", ng.store.Single)
 	context.String(http.StatusOK, ng.Response.ToJson())
 }
 
 func (ng *NegocioApp) Read(context *gin.Context) {
 	id := context.Param("id")
+	var resultError error
 	//ng.decode(context)
 	if id != "" {
 		objID, err := primitive.ObjectIDFromHex(id)
@@ -58,13 +72,17 @@ func (ng *NegocioApp) Read(context *gin.Context) {
 			panic(err)
 		}
 		ng.store.Single.NegocioID = objID
-		ng.store.Read()
+		resultError = ng.store.Read()
 	} else {
-		ng.store.ReadMany()
+		resultError = ng.store.ReadMany()
 	}
 	ng.Response = modellayer.Response{
 		Id:      helperlayer.Success,
 		Message: "Negocios",
+	}
+	if resultError != nil {
+		ng.Response.Id = helperlayer.Error
+		ng.Response.Message = resultError.Error()
 	}
 	ng.Response.Set("List", ng.store.List)
 	ng.Response.Set("Single", ng.store.Single)
@@ -95,9 +113,20 @@ func (ng *NegocioApp) decode(context *gin.Context) {
 	if negocio.NegocioID == primitive.NilObjectID {
 		negocio.NegocioID = primitive.NewObjectID()
 	}
-	negocio.Inicio = time.Now()
-	negocio.Final = negocio.Inicio.AddDate(0, negocio.Periodo, 0)
+
+	auxInicio := time.Now()
+	negocio.Inicio = &auxInicio
+	auxFinal := negocio.Inicio.AddDate(0, negocio.Periodo, 0)
+	negocio.Final = &auxFinal
 	ng.store.Single = negocio
 	ng.store.Single.Init(0)
+}
+
+func (ng *NegocioApp) ValidateCreation() (err error){
+	single := ng.store.Single
+	if single.Clave == "" || single.Owner.Correo == "" || single.PeriodoVigencia == helperlayer.InvalidVigencia || single.Folios == 0 || single.Periodo == 0{
+		err = errors.New("Bad request: Incomplete data")
+		return
+	}
 	return
 }

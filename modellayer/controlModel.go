@@ -14,13 +14,14 @@ type Control struct {
 }
 
 type ControlData struct {
-	Usuario int
-	Fecha   time.Time
+	Usuario int       `json:",omitempty"`
+	Fecha   *time.Time `json:",omitempty"`
 }
 
 func (cd *ControlData) update(user int) {
 	cd.Usuario = user
-	cd.Fecha = time.Now()
+	aux := time.Now()
+	cd.Fecha = &aux
 }
 
 func (c *Control) SetEstatus(estatus helperlayer.Estatus, user int) {

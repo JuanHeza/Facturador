@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -19,6 +20,9 @@ import (
 
 func SetUpRouter() *gin.Engine {
 	router := gin.Default()
+	negocioApp := NewNegocioApp()
+	router.GET("/negocio/", negocioApp.Clean(), negocioApp.Read)
+	router.GET("/negocio/:id", negocioApp.Clean(), negocioApp.Read)
 	return router
 }
 
@@ -57,7 +61,7 @@ func TestNegocioApp_Create(t *testing.T) {
 		args args
 	}{
 		{
-			name: "Prueba 1",
+			name: "Prueba 1 @ Create",
 			ng:   &NegocioApp{},
 			args: args{
 				context: GetTestGinContext(),
@@ -98,7 +102,7 @@ func TestNegocioApp_Read(t *testing.T) {
 		args args
 	}{
 		{
-			name: "Prueba 1",
+			name: "Prueba 1 @ Read",
 			ng:   &NegocioApp{},
 			args: args{
 				result: modellayer.Response{
@@ -109,25 +113,33 @@ func TestNegocioApp_Read(t *testing.T) {
 			},
 		},
 		{
-			name: "Prueba 2",
+			name: "Prueba 2 @ Read",
+			ng:   &NegocioApp{},
+			args: args{
+				result: modellayer.Response{
+					Id:      helperlayer.Error,
+					Message: "mongo: no documents in result",
+				},
+				data: "/negocio/656980b5b01c2801819367da",
+			},
+		},
+		{
+			name: "Prueba 3 @ Read",
 			ng:   &NegocioApp{},
 			args: args{
 				result: modellayer.Response{
 					Id:      helperlayer.Success,
 					Message: "Negocios",
 				},
-				data: "/negocio/656980b5b01c2801819367da",
+				data: "/negocio/657bf468e4e7c217c37b3a71",
 			},
 		},
 	}
 
 	r := SetUpRouter()
-	negocioApp := NewNegocioApp()
-	r.GET("/negocio/", negocioApp.Read)
-	r.GET("/negocio/:id", negocioApp.Read)
 
 	for _, tt := range tests {
-		fmt.Println(tt.name)
+		log.Println(tt.name)
 		req, _ := http.NewRequest("GET", tt.args.data, nil)
 		w := httptest.NewRecorder()
 		r.ServeHTTP(w, req)
@@ -135,7 +147,7 @@ func TestNegocioApp_Read(t *testing.T) {
 		json.NewDecoder(w.Body).Decode(&res)
 		assert.Equal(t, tt.args.result.Id, res.Id)
 		assert.Equal(t, tt.args.result.Message, res.Message)
-		fmt.Println(res.Data)
+		fmt.Println(res)
 		assert.Equal(t, http.StatusOK, w.Code)
 	}
 }

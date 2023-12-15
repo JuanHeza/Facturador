@@ -17,7 +17,8 @@ const (
     NoFacturado
     Pendiente
 
-	Dias Vigencia = iota + 1
+	InvalidVigencia Vigencia = iota 
+	Dias 
 	Mes
 
 	Admin Perfil = iota + 1

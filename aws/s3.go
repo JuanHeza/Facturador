@@ -4,7 +4,8 @@ package aws
 
 import (
 	"context"
-	"encoding/json"
+	_"encoding/json"
+	"io"
 	"log"
 	"os"
 

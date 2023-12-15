@@ -24,7 +24,6 @@ func (rc *ReceptorApp) Create(context *gin.Context) {
 	if err != nil {
 		return
 	}
-	return
 }
 
 func (rc *ReceptorApp) CreateAdmin(context *gin.Context, negocio primitive.ObjectID) {
@@ -33,23 +32,19 @@ func (rc *ReceptorApp) CreateAdmin(context *gin.Context, negocio primitive.Objec
 	if err != nil {
 		return
 	}
-	return
 }
 
 func (rc *ReceptorApp) Read(context *gin.Context) {
 	receptorApp.decode(context)
 	receptorApp.store.Read()
-	return
 }
 func (rc *ReceptorApp) Update(context *gin.Context) {
 	receptorApp.decode(context)
 	receptorApp.store.Update()
-	return
 }
 func (rc *ReceptorApp) Delete(context *gin.Context) {
 	receptorApp.decode(context)
 	receptorApp.store.Delete()
-	return
 }
 func (rc *ReceptorApp) GetStore() *storelayer.ReceptorStore {
 	return &rc.store
@@ -61,5 +56,4 @@ func (rc *ReceptorApp) decode(context *gin.Context) {
 		log.Println(err)
 	}
 	rc.store.Single = receptor
-	return
 }

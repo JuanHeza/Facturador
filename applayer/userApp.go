@@ -29,7 +29,6 @@ func (us *UserApp) Create(context *gin.Context) {
 	if err != nil {
 		return
 	}
-	return
 }
 
 func (us *UserApp) CreateAdmin(context *gin.Context, negocio primitive.ObjectID) *modellayer.User {
@@ -45,17 +44,14 @@ func (us *UserApp) CreateAdmin(context *gin.Context, negocio primitive.ObjectID)
 func (us *UserApp) Read(context *gin.Context) {
 	us.decode(context)
 	us.store.Read()
-	return
 }
 func (us *UserApp) Update(context *gin.Context) {
 	us.decode(context)
 	us.store.Update()
-	return
 }
 func (us *UserApp) Delete(context *gin.Context) {
 	us.decode(context)
 	us.store.Delete()
-	return
 }
 func (us *UserApp) GetStore() *storelayer.UserStore {
 	return &us.store
@@ -70,5 +66,4 @@ func (us *UserApp) decode(context *gin.Context) {
 		user.UsuarioID = primitive.NewObjectID()
 	}
 	us.store.Single = user
-	return
 }

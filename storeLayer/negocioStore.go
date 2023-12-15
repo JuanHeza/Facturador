@@ -1,13 +1,14 @@
 package storelayer
 
 import (
+	"context"
 	"fmt"
 	"log"
 
 	"github.com/juanheza/facturador/helperlayer"
 	"github.com/juanheza/facturador/modellayer"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	_ "go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -29,7 +30,7 @@ func (ns *NegocioStore) Create() (res *mongo.InsertOneResult, err error) {
 	res, err = Create(ns)
 	if err != nil {
 		panic(err)
-		return
+
 	}
 	return
 }
@@ -38,7 +39,7 @@ func (ns *NegocioStore) CreateMany() (res *mongo.InsertManyResult, err error) {
 	res, err = CreateMany(ns)
 	if err != nil {
 		panic(err)
-		return
+
 	}
 	return
 }
@@ -46,21 +47,11 @@ func (ns *NegocioStore) CreateMany() (res *mongo.InsertManyResult, err error) {
 func (ns *NegocioStore) Read() (err error) {
 	fmt.Println("READING")
 	err = Read(ns)
-	log.Println(ns)
-	if err != nil {
-		panic(err)
-		return
-	}
 	return
 }
 func (ns *NegocioStore) ReadMany() (err error) {
 	fmt.Println("READING MANY")
 	err = ReadMany(ns)
-	log.Println(ns)
-	if err != nil {
-		panic(err)
-		return
-	}
 	return
 }
 func (ns *NegocioStore) Update() (err error) {
@@ -68,7 +59,7 @@ func (ns *NegocioStore) Update() (err error) {
 	log.Println(result)
 	if err != nil {
 		panic(err)
-		return
+
 	}
 	return
 }
@@ -77,7 +68,7 @@ func (ns *NegocioStore) Delete() (err error) {
 	log.Println(result)
 	if err != nil {
 		panic(err)
-		return
+
 	}
 	return
 }
@@ -108,26 +99,34 @@ func (ns *NegocioStore) getOptions() bson.M {
 }
 func (ns *NegocioStore) getProjection(projection string) bson.M {
 	projectionCatalog := map[string]bson.M{
-		"id": bson.M{
+		"id": {
 			"_id":             1,
 			"colorSecundario": 1,
 			"colorPrincipal":  1,
 			"logo":            1,
 			"clave":           1,
 		},
-		"expandesd": bson.M{
+		"expandesd": {
 			"_id": 1,
 		},
 	}
 	return projectionCatalog[projection]
 }
-func (ns *NegocioStore) SetList(list []interface{}) {
-	dst := make([]*modellayer.Negocio, len(list))
-	for i := range list {
-		one := &modellayer.Negocio{}
-		dst[i] = list[i].(primitive.D).decode(one)
+
+/*
+	func (ns *NegocioStore) SetList(list []interface{}) {
+		dst := make([]*modellayer.Negocio, len(list))
+		for i := range list {
+			//one := &modellayer.Negocio{}
+			fmt.Println(list[i])
+			//dst[i] = list[i].(primitive.D).decode(one)
+		}
+		ns.List = dst
 	}
-	ns.List = dst
+*/
+func (ns *NegocioStore) SetList(cursor *mongo.Cursor) (err error) {
+	err = cursor.All(context.TODO(), &ns.List)
+	return
 }
 func (ns *NegocioStore) UpdateTokenAdmin(user *modellayer.User) {
 	ns.Options = bson.M{

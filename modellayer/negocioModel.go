@@ -11,18 +11,18 @@ import (
 )
 
 type Negocio struct {
-	NegocioID       primitive.ObjectID `json:",omitempty" bson:"_id,omitempty"`
-	BearerToken     string             `json:"-" bson:"bearer_token,omitempty"`
-	Clave           string             `json:",omitempty"  bson:"clave,omitempty"`
-	Logo            string             `json:",omitempty"  bson:"logo,omitempty"`
-	ColorPrincipal  string             `json:",omitempty"  bson:"color_primario,omitempty"`
-	ColorSecundario string             `json:",omitempty"  bson:"color_secundario,omitempty"`
-	ConfiguracionNegocio
-	DatosGenerales `bson:",omitempty"`
-	Emisor         `bson:"emisor,omitempty"`
-	Sucursales     []*Sucursal `json:",omitempty" bson:"sucursales,omitempty"`
-	Owner          User        `json:",omitempty" bson:"owner,omitempty"`
-	Control
+	NegocioID            primitive.ObjectID `json:",omitempty" bson:"_id,omitempty"`
+	BearerToken          string             `json:"-,omitempty" bson:"bearer_token,omitempty"`
+	Clave                string             `json:",omitempty" bson:"clave,omitempty"`
+	Logo                 string             `json:",omitempty" bson:"logo,omitempty"`
+	ColorPrincipal       string             `json:",omitempty" bson:"color_primario,omitempty"`
+	ColorSecundario      string             `json:",omitempty" bson:"color_secundario,omitempty"`
+	ConfiguracionNegocio `json:",omitempty"`
+	DatosGenerales       `bson:",omitempty" json:",omitempty"`
+	Emisor               `bson:",omitempty" json:",omitempty"`
+	Sucursales           []*Sucursal `json:",omitempty" bson:"sucursales,omitempty"`
+	Owner                User        `json:",omitempty" bson:"owner,omitempty"`
+	Control              `json:",omitempty"`
 }
 
 type ConfiguracionNegocio struct {
@@ -33,9 +33,9 @@ type ConfiguracionNegocio struct {
 }
 
 type Vigencia struct {
-	Periodo int       `json:",omitempty" bson:",omitempty"`
-	Inicio  time.Time `json:",omitempty" bson:"inicio,omitempty"`
-	Final   time.Time `json:",omitempty" bson:"final,omitempty"`
+	Periodo int        `json:",omitempty" bson:",omitempty"`
+	Inicio  *time.Time `json:",omitempty" bson:"inicio,omitempty"`
+	Final   *time.Time `json:",omitempty" bson:"final,omitempty"`
 }
 
 type Link struct {
@@ -78,8 +78,10 @@ func (dg *DatosGenerales) SetNull() {
 }
 
 func (ng *Negocio) GenerateBearer() {
-	ng.Inicio = time.Now()
-	ng.Final = ng.Inicio.AddDate(0, ng.Periodo, 0)
+	auxInicio := time.Now()
+	ng.Inicio = &auxInicio
+	auxFinal := ng.Inicio.AddDate(0, ng.Periodo, 0)
+	ng.Final = &auxFinal
 
 	bearerData := &Token{
 		NegocioId: ng.NegocioID.Hex(),
@@ -111,12 +113,12 @@ func NewNegocio() *Negocio {
 	}
 }
 
-func (ng *Negocio) ToFilter() (filter bson.M){
-    data, err := bson.Marshal(ng)
-    if err != nil {
-        return
-    }
-    err = bson.Unmarshal(data, &filter)
-    filter = bson.M{"_id": ng.NegocioID}
-    return
+func (ng *Negocio) ToFilter() (filter bson.M) {
+	data, err := bson.Marshal(ng)
+	if err != nil {
+		return
+	}
+	err = bson.Unmarshal(data, &filter)
+	filter = bson.M{"_id": ng.NegocioID}
+	return
 }
